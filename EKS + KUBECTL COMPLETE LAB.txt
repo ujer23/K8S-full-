@@ -1,0 +1,102 @@
+# EKS + KUBECTL COMPLETE LAB
+
+# 1. Update package list
+sudo apt update
+
+# 2. Install AWS CLI
+sudo apt install awscli
+
+# 3. Install kubectl
+sudo snap install kubectl --classic
+
+# Snap = package installer/manager for Linux
+# --classic = install with less sandbox restriction
+
+# 4. Configure kubectl to access EKS
+aws eks update-kubeconfig --region us-east-1 --name my-cluster-02
+
+# 5. Check EKS worker nodes
+kubectl get nodes
+
+# IAM ROLES
+
+# EKS Cluster Role
+AmazonEKSClusterPolicy
+→ Used by EKS control plane
+
+# Ubuntu EC2 Role (day-2-eks)
+AmazonEKSMCPReadOnlyAccess
+→ Allows EC2/AWS CLI to access/read EKS information
+
+# Node Group Role
+AmazonEKSWorkerNodePolicy
+AmazonEC2ContainerRegistryPullOnly
+AmazonEKS_CNI_Policy
+→ Used by worker-node EC2s
+
+# NODE GROUP
+
+# Create a Managed Node Group.
+# It automatically creates and manages worker EC2 nodes.
+
+# Example:
+Minimum = 1
+Desired = 2
+Maximum = 3
+
+# Minimum = minimum number of nodes
+# Desired = number of nodes to start with
+# Maximum = maximum number of nodes
+
+# After Node Group is Active:
+kubectl get nodes
+
+# Nodes should show:
+Ready
+
+# CREATE FIRST POD
+
+kubectl run nginx --image=nginx
+
+# Check Pod
+kubectl get pods
+
+# Expected:
+nginx   1/1   Running
+
+# EXPOSE POD USING SERVICE
+
+kubectl expose pod nginx --port=80 --type=LoadBalancer
+
+# Check Service
+kubectl get svc
+
+
+# FINAL FLOW
+
+EKS Cluster
+    ↓
+Node Group
+    ↓
+Worker EC2 Node
+    ↓
+Pod
+    ↓
+Container
+    ↓
+Service
+    ↓
+Load Balancer
+    ↓
+User
+
+
+# IMPORTANT
+
+# Ubuntu EC2 = management machine
+# Worker EC2 = runs Kubernetes Pods
+# Node Group = creates/manages worker EC2 nodes
+# Pod = runs container(s)
+# Container = runs application
+# Service = provides stable access to Pods
+# LoadBalancer = exposes Service to the internet
