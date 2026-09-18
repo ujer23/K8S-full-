@@ -1,0 +1,104 @@
+apiVersion: apps/v1
+kind: StatefulSet
+
+metadata:
+  name: nginx-sts
+  namespace: nginx-ns
+
+spec:
+  serviceName: nginx
+  replicas: 2
+
+  selector:
+    matchLabels:
+      app: nginx
+
+  template:
+    metadata:
+      labels:
+        app: nginx
+
+    spec:
+      containers:
+      - name: nginx-cont
+        image: nginx
+
+        ports:
+        - containerPort: 80 
+
+Deamonset 
+
+apiVersion: apps/v1
+kind: DaemonSet
+
+metadata:
+  name: nginx-ds
+  namespace: nginx-ns
+
+spec:
+  selector:
+    matchLabels:
+      app: nginx
+
+  template:
+    metadata:
+      labels:
+        app: nginx
+
+    spec:
+      containers:
+      - name: nginx-cont
+        image: nginx
+
+        ports:
+        - containerPort: 80
+
+
+kubectl apply -f daemonset.yml
+kubectl get pods -n nginx-ns
+
+
+
+
+2. Scale
+Deployment
+
+
+kubectl scale deployment/nginx-dep -n nginx-ns --replicas=5
+
+ReplicaSet
+
+kubectl scale rs/nginx-rs -n nginx-ns --replicas=5
+
+StatefulSet
+
+kubectl scale sts/mysql -n nginx-ns --replicas=3
+
+
+
+
+3. Rollout Commands
+
+These are mainly useful for Deployments.
+
+Check rollout
+
+
+kubectl rollout status deployment/nginx-dep -n nginx-ns
+
+See rollout history
+
+kubectl rollout history deployment/nginx-dep -n nginx-ns
+
+Update image
+
+kubectl set image deployment/nginx-dep nginx-cont=nginx:1.27 -n nginx-ns
+
+Rollback
+
+kubectl rollout undo deployment/nginx-dep -n nginx-ns
+
+Restart Deployment
+
+kubectl rollout restart deployment/nginx-dep -n nginx-ns
+
